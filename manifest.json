@@ -17,14 +17,18 @@
         "effects/snow.js",
         "effects/stars.js",
         "effects/matrix.js",
+        "effects/rest.js",
+        "effects/train.js",
         "content.js"
       ],
-      "css": ["fire.css", "rain.css", "effects/snow.css", "effects/stars.css", "effects/matrix.css"]
+      "css": ["fire.css", "rain.css", "effects/snow.css", "effects/stars.css", "effects/matrix.css", "effects/rest.css", "effects/train.css"],
+      "run_at": "document_end",
+      "all_frames": false
     }
   ],
   "web_accessible_resources": [
     {
-      "resources": ["effects/*", "*.css"],
+      "resources": ["effects/*", "*.css", "*.mp4", "*.webm"],
       "matches": ["<all_urls>"]
     }
   ],

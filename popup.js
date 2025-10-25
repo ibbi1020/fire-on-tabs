@@ -34,20 +34,40 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Send preview message to content script
         chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-            if (tabs[0]) {
-                chrome.tabs.sendMessage(tabs[0].id, {
-                    action: 'preview',
-                    effect: selectedEffect
-                }, function(response) {
-                    if (chrome.runtime.lastError) {
-                        console.log('Could not send preview message:', chrome.runtime.lastError);
-                        status.textContent = 'Preview failed - content script not available';
-                        status.className = 'status error';
-                    } else {
-                        console.log('Preview sent successfully');
-                    }
-                });
+            if (!tabs[0]) {
+                status.textContent = 'No active tab found';
+                status.className = 'status error';
+                return;
             }
+            
+            const tab = tabs[0];
+            
+            // Check if this is a restricted page
+            const url = tab.url || '';
+            if (url.startsWith('chrome://') || 
+                url.startsWith('chrome-extension://') || 
+                url.startsWith('edge://') ||
+                url.startsWith('about:') ||
+                !url) {
+                status.textContent = '⚠️ Preview not available on this page. Open a regular website.';
+                status.className = 'status error';
+                return;
+            }
+            
+            chrome.tabs.sendMessage(tab.id, {
+                action: 'preview',
+                effect: selectedEffect
+            }, function(response) {
+                if (chrome.runtime.lastError) {
+                    console.log('Could not send preview message:', chrome.runtime.lastError);
+                    status.textContent = '⚠️ Please reload this page (Ctrl+R) to enable preview';
+                    status.className = 'status error';
+                } else {
+                    console.log('Preview sent successfully');
+                    status.textContent = `✅ Previewing ${selectedEffect} for 3 seconds...`;
+                    status.className = 'status success';
+                }
+            });
         });
     });
 
@@ -141,30 +161,45 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             console.log('Settings saved to storage:', settings);
-            status.textContent = 'Settings saved successfully!';
+            status.textContent = '✅ Settings saved successfully!';
             status.className = 'status success';
             
             // Send settings update to content script
             chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-                if (tabs[0]) {
-                    chrome.tabs.sendMessage(tabs[0].id, {
-                        action: 'updateSettings',
-                        settings: settings
-                    }, function(response) {
-                        if (chrome.runtime.lastError) {
-                            console.log('Could not send message to content script:', chrome.runtime.lastError);
-                            status.textContent = 'Settings saved! Refresh page to apply changes.';
-                            status.className = 'status success';
-                        } else {
-                            console.log('Settings sent to content script successfully:', response);
-                            status.textContent = 'Settings saved and applied!';
-                            status.className = 'status success';
-                        }
-                    });
-                } else {
-                    status.textContent = 'Settings saved! Open a webpage to see effects.';
+                if (!tabs[0]) {
+                    status.textContent = '✅ Settings saved! Open a webpage to see effects.';
                     status.className = 'status success';
+                    return;
                 }
+                
+                const tab = tabs[0];
+                
+                // Check if this is a restricted page
+                const url = tab.url || '';
+                if (url.startsWith('chrome://') || 
+                    url.startsWith('chrome-extension://') || 
+                    url.startsWith('edge://') ||
+                    url.startsWith('about:') ||
+                    !url) {
+                    status.textContent = '✅ Settings saved! (Effects work on regular websites only)';
+                    status.className = 'status success';
+                    return;
+                }
+                
+                chrome.tabs.sendMessage(tab.id, {
+                    action: 'updateSettings',
+                    settings: settings
+                }, function(response) {
+                    if (chrome.runtime.lastError) {
+                        console.log('Could not send message to content script:', chrome.runtime.lastError);
+                        status.textContent = '✅ Settings saved! Reload page (Ctrl+R) to apply.';
+                        status.className = 'status success';
+                    } else {
+                        console.log('Settings sent to content script successfully:', response);
+                        status.textContent = '✅ Settings saved and applied!';
+                        status.className = 'status success';
+                    }
+                });
             });
         });
     });
@@ -178,7 +213,7 @@ document.addEventListener('DOMContentLoaded', function() {
             console.log('Popup loaded settings:', settings);
             
             // Validate settings
-            if (!settings.effect || !['fire', 'rain', 'snow', 'stars', 'matrix'].includes(settings.effect)) {
+            if (!settings.effect || !['fire', 'rain', 'snow', 'stars', 'matrix', 'rest', 'train'].includes(settings.effect)) {
                 settings.effect = 'fire';
             }
             if (!settings.idleDelay || settings.idleDelay < 1 || settings.idleDelay > 30) {

@@ -109,6 +109,34 @@ header p {
     background: linear-gradient(45deg, #0f0, #000);
 }
 
+.rest-preview {
+    background: linear-gradient(45deg, #8ec5fc, #e0c3fc);
+}
+
+.rest-icon {
+    font-size: 20px;
+    animation: breathe 3s ease-in-out infinite;
+}
+
+.train-preview {
+    background: linear-gradient(45deg, #ffecd2, #fcb69f);
+}
+
+.train-icon {
+    font-size: 20px;
+    animation: chugChug 2s ease-in-out infinite;
+}
+
+@keyframes chugChug {
+    0%, 100% { transform: translateX(-2px); }
+    50% { transform: translateX(2px); }
+}
+
+@keyframes breathe {
+    0%, 100% { transform: scale(1); opacity: 0.8; }
+    50% { transform: scale(1.1); opacity: 1; }
+}
+
 .flame {
     width: 8px;
     height: 12px;

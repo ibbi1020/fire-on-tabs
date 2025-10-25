@@ -1,5 +1,8 @@
 // content.js - Visual Effects Manager
+console.log('🎬 Content script loading...');
+
 (() => {
+  console.log('🎬 Content script IIFE executing...');
   let idleTimer = null;
   let currentEffect = null;
   let settings = {
@@ -28,7 +31,9 @@
     rain: window.RainEffect,
     snow: window.SnowEffect,
     stars: window.StarsEffect,
-    matrix: window.MatrixEffect
+    matrix: window.MatrixEffect,
+    rest: window.RestEffect,
+    train: window.TrainEffect
   };
 
   // Debug: Log effect availability
@@ -37,7 +42,9 @@
     rain: !!window.RainEffect,
     snow: !!window.SnowEffect,
     stars: !!window.StarsEffect,
-    matrix: !!window.MatrixEffect
+    matrix: !!window.MatrixEffect,
+    rest: !!window.RestEffect,
+    train: !!window.TrainEffect
   });
 
   function checkAvailableEffects() {
@@ -46,7 +53,9 @@
       rain: !!window.RainEffect,
       snow: !!window.SnowEffect,
       stars: !!window.StarsEffect,
-      matrix: !!window.MatrixEffect
+      matrix: !!window.MatrixEffect,
+      rest: !!window.RestEffect,
+      train: !!window.TrainEffect
     };
     console.log('Available effects:', available);
     
@@ -163,6 +172,10 @@
   }
 
   function init() {
+    console.log('🚀 Initializing content script...');
+    console.log('📍 Document state:', document.readyState);
+    console.log('📍 Document URL:', window.location.href);
+    
     loadSettings(() => {
       checkAvailableEffects();
 
@@ -183,13 +196,21 @@
       setTimeout(() => {
         checkAvailableEffects();
         resetIdleTimer();
+        console.log('✅ Content script fully initialized!');
       }, 500);
     });
   }
 
+  console.log('📍 About to check document state...');
   if (document.readyState === 'loading') {
+    console.log('📍 Document still loading, waiting for DOMContentLoaded...');
     document.addEventListener('DOMContentLoaded', init);
   } else {
+    console.log('📍 Document already loaded, initializing immediately...');
     init();
   }
+  
+  console.log('✅ Content script setup complete');
 })();
+
+console.log('✅ Content script file executed');

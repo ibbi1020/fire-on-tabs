@@ -1,4 +1,6 @@
 // fire.js - Canvas fire overlay effect
+console.log('🔥 Fire effect module loading...');
+
 (() => {
   const flames = [];
   const sparks = [];
@@ -240,4 +242,6 @@
     cleanup,
     init: () => {}
   };
+  
+  console.log('✅ Fire effect module loaded and exported to window.FireEffect');
 })();
